@@ -1,0 +1,159 @@
+import os
+from openai import OpenAI
+import ipywidgets as widgets
+from IPython.display import display, Markdown
+from datetime import datetime
+
+# -------------------------------
+# Set API Key
+# -------------------------------
+OPENAI_API_KEY = "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"
+client = OpenAI(api_key=OPENAI_API_KEY)
+
+# -------------------------------
+# Core AI Helper
+# -------------------------------
+def ask_ai(prompt, role="You are a helpful AI assistant."):
+    """Send a prompt to OpenAI and return answer"""
+    response = client.chat.completions.create(
+        model="gpt-4o-mini",   # works with openai>=1.0.0
+        messages=[
+            {"role": "system", "content": role},
+            {"role": "user", "content": prompt}
+        ],
+        temperature=0.7,
+        max_tokens=4000
+    )
+    return response.choices[0].message.content
+
+
+# -------------------------------
+# 1. Daily Planner Generator
+# -------------------------------
+def generate_planner(tasks):
+    prompt = f"Create a well-structured daily plan with the following tasks: {tasks}. Add time slots and productivity tips."
+    return ask_ai(prompt, role="You are a productivity planner.")
+
+
+# -------------------------------
+# 2. Smart Decision Helper
+# -------------------------------
+def decision_helper(options, context=""):
+    prompt = f"Help me choose between: {options}. Context: {context}. Provide pros and cons, and final recommendation."
+    return ask_ai(prompt, role="You are a decision-making assistant.")
+
+
+# -------------------------------
+# 3. Personalized Reminder System
+# -------------------------------
+reminders = []
+
+def add_reminder(text, time):
+    reminders.append({"text": text, "time": time})
+    return f"✅ Reminder added: '{text}' at {time}"
+
+def check_reminders():
+    now = datetime.now().strftime("%H:%M")
+    due = [r for r in reminders if r["time"] <= now]
+    if due:
+        return "\n".join([f"⏰ {r['text']} (at {r['time']})" for r in due])
+    else:
+        return "No reminders due now."
+
+
+# -------------------------------
+# 4. Emotion-Aware Journal
+# -------------------------------
+def analyze_emotion(entry):
+    prompt = f"Analyze the sentiment of this journal entry: {entry}. Respond with Positive, Negative, or Neutral and explain briefly."
+    return ask_ai(prompt, role="You are a sentiment analysis assistant.")
+
+
+# -------------------------------
+# Interactive UI
+# -------------------------------
+# Daily Planner UI
+planner_box = widgets.Textarea(placeholder="Enter your tasks...", description="Tasks:")
+planner_button = widgets.Button(description="Generate Plan", button_style='success')
+planner_output = widgets.Output()
+
+def on_planner_click(b):
+    planner_output.clear_output()
+    with planner_output:
+        tasks = planner_box.value
+        plan = generate_planner(tasks)
+        display(Markdown("### 🗓 Daily Planner\n" + plan))
+
+planner_button.on_click(on_planner_click)
+
+
+# Decision Helper UI
+options_box = widgets.Textarea(placeholder="Option A vs Option B...", description="Options:")
+context_box = widgets.Textarea(placeholder="Add context (optional)...", description="Context:")
+decision_button = widgets.Button(description="Get Decision Help", button_style='info')
+decision_output = widgets.Output()
+
+def on_decision_click(b):
+    decision_output.clear_output()
+    with decision_output:
+        opts = options_box.value
+        ctx = context_box.value
+        result = decision_helper(opts, ctx)
+        display(Markdown("### 🧭 Smart Decision Helper\n" + result))
+
+decision_button.on_click(on_decision_click)
+
+
+# Reminder System UI
+reminder_text = widgets.Text(placeholder="Enter reminder...", description="Reminder:")
+reminder_time = widgets.Text(placeholder="HH:MM", description="Time:")
+reminder_button = widgets.Button(description="Add Reminder", button_style='warning')
+check_button = widgets.Button(description="Check Reminders", button_style='primary')
+reminder_output = widgets.Output()
+
+def on_reminder_add(b):
+    reminder_output.clear_output()
+    with reminder_output:
+        msg = add_reminder(reminder_text.value, reminder_time.value)
+        display(Markdown(msg))
+
+def on_reminder_check(b):
+    reminder_output.clear_output()
+    with reminder_output:
+        due = check_reminders()
+        display(Markdown("### ⏰ Reminders\n" + due))
+
+reminder_button.on_click(on_reminder_add)
+check_button.on_click(on_reminder_check)
+
+
+# Journal UI
+journal_box = widgets.Textarea(placeholder="Write your thoughts...", description="Journal Entry:")
+journal_button = widgets.Button(description="Analyze Emotion", button_style='danger')
+journal_output = widgets.Output()
+
+def on_journal_click(b):
+    journal_output.clear_output()
+    with journal_output:
+        entry = journal_box.value
+        result = analyze_emotion(entry)
+        display(Markdown("### 📔 Emotion-Aware Journal\n" + result))
+
+journal_button.on_click(on_journal_click)
+
+
+# -------------------------------
+# Display All Modules
+# -------------------------------
+display(Markdown("## 🤖 Smart AI Companion –"))
+display(Markdown("### 🗓 Daily Planner Generator"))
+display(planner_box, planner_button, planner_output)
+
+display(Markdown("### 🧭 Smart Decision Helper"))
+display(options_box, context_box, decision_button, decision_output)
+
+display(Markdown("### ⏰ Personalized Reminder System"))
+display(reminder_text, reminder_time, reminder_button, check_button, reminder_output)
+
+display(Markdown("### 📔 Emotion-Aware Journal"))
+display(journal_box, journal_button, journal_output)
