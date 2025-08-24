@@ -35,4 +35,4 @@ Smart AI Companion centralizes daily planning, decision-making, reminders, and e
 ---
 
 ## 🚀 How to Run
--- Use this colab link :- https://colab.research.google.com/gist/KOLLIVENNELACHOWDARY/2e38d47d99a8440576b7678d6cc7682e/nxt-wave-hackathon-project.ipynb
+-- Use this colab link :- https://colab.research.google.com/drive/1OT8U4c3NPltVonk9Zf6sgy-w6fYaJTwn?usp=sharing
