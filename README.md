@@ -36,3 +36,13 @@ Smart AI Companion centralizes daily planning, decision-making, reminders, and e
 
 ## 🚀 How to Run
 -- Use this colab link :- https://colab.research.google.com/drive/1OT8U4c3NPltVonk9Zf6sgy-w6fYaJTwn?usp=sharing
+
+----
+**Author**
+---
+KOLLI VENNELA CHOWDARY
+
+------
+**Liscence**
+---
+This project is intended for educational purposes.
